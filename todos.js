@@ -5,12 +5,12 @@ const { getUsers } = require("./users");
 
 const usersPath = path.join(__dirname, "db", "users.json");
 
-async function listTodos(email) {
+async function listTodos(userId) {
   try {
     const users = await getUsers();
 
     const list = users.find(
-      (user) => user.email === email && user.token && user.todos
+      (user) => user.id === userId && user.token && user.todos
     );
 
     return list?.todos || "not authorized";
@@ -19,17 +19,18 @@ async function listTodos(email) {
   }
 }
 
-async function getTodoById(email, todoId) {
+async function getTodoById(userId, todoId) {
   try {
     const users = await getUsers();
 
     let todo;
 
     users.find((user) => {
-      if (user.email === email) {
-        if (!user.token) {
-          return;
-        }
+      if (!user.token) {
+        return;
+      }
+
+      if (user.id === userId) {        
         todo = user.todos.filter((todo) => todo.id === todoId);
       }
     });
@@ -40,18 +41,20 @@ async function getTodoById(email, todoId) {
   }
 }
 
-async function removeTodo(email, todoId) {
+async function removeTodo(userId, todoId) {
   try {
     const users = await getUsers();
 
-    const authorized = users.find((user) => {
-      if (user.email === email) {
-        if (!user.token) {
+    const authorized = users.find((user) => { 
+      
+       if (!user.token) {
           return;
-        }
+        };
+
+      if (user.id === userId) {              
         user.todos = user.todos.filter((todo) => todo.id !== todoId);
         return user;
-      }
+      };
     });
 
     await fs.writeFile(usersPath, JSON.stringify(users), "utf-8");
@@ -61,16 +64,16 @@ async function removeTodo(email, todoId) {
   }
 }
 
-async function updateTodo(email, todoId, title, text) {
+async function updateTodo(userId, todoId, title, text) {
   try {
     const users = await getUsers();
 
-    const authorized = users.find((user) => {
+    users.find((user) => {
       if (!user.token) {
         return;
       }
 
-      if (user.email === email) {
+      if (user.id === userId) {
         user.todos.filter((todo) => {
           if (todo.id === todoId) {
             title ? (todo.title = title) : todo.title;
@@ -80,7 +83,6 @@ async function updateTodo(email, todoId, title, text) {
         });
       }
     });
-    console.log(authorized);
 
     await fs.writeFile(usersPath, JSON.stringify(users), "utf-8");
 
@@ -90,13 +92,13 @@ async function updateTodo(email, todoId, title, text) {
   }
 }
 
-async function addTodo(email, title, text) {
+async function addTodo(userId, title, text) {
   try {
     const users = await getUsers();
 
     const authorized = users.filter(
       (user) =>
-        user.email === email &&
+        user.id === userId &&
         user.token &&
         user.todos.push({ id: shortid.generate(), title, text })
     );

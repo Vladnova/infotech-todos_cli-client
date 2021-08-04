@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs").promises;
 const randtoken = require("rand-token");
 const bcrypt = require("bcrypt");
+const shortid = require("shortid");
 
 require("dotenv").config();
 
@@ -34,7 +35,7 @@ async function signup(email, password) {
     }
 
     
-    users.push({ email, password: setPassword(password), todos: [] });
+    users.push({id: shortid.generate(), email, password: setPassword(password), todos: [] });
 
     await fs.writeFile(usersPath, JSON.stringify(users), "utf-8");
 

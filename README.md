@@ -1,17 +1,17 @@
 # Получаем и выводим весь список Todos  в виде таблицы 
-node index.js --action list --email example@ukr.net
+node index.js --action list --userId exampleId
 
 # Получаем Todo по id
-node index.js --action get --email example@ukr.net --id todoId
+node index.js --action get --userId exampleId --id todoId
 
 # Добавялем Todo
-node index.js --action add --email example@ukr.net --title "example todo" --text "add todo"
+node index.js --action add --userId exampleId --title "example todo" --text "add todo"
 
 # Удаляем контакт
-node index.js --action remove --email example@ukr.net --id todoId
+node index.js --action remove --userId exampleId --id todoId
 
 # Обновляем Todo
-node index.js --action update --email example@ukr.net --id todoId --title "update todo" --text "add update todo"
+node index.js --action update --userId exampleId --id todoId --title "update todo" --text "add update todo"
 
 
 
